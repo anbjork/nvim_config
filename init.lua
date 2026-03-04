@@ -247,7 +247,10 @@ rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
+  {
+    'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
+    opts = {},
+  },
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -851,6 +854,39 @@ require('lazy').setup({
         -- By default, you may press `<c-space>` to show the documentation.
         -- Optionally, set `auto_show = true` to show the documentation after a delay.
         documentation = { auto_show = false, auto_show_delay_ms = 500 },
+
+        -- Setting from chatbot to stop preselecting //AB
+        list = {
+          selection = {
+            -- Preselect is not the issue, just auto insert //AB
+            -- preselect = false,
+            auto_insert = false,
+          },
+        },
+        -- Yeah, that turned out annoying quickly. Trying defaults //AB
+        -- menu = {
+        --   -- This was set to true in chatbot snippet,
+        --   -- but I'll probably prefer false, and testing false
+        --   -- first allows me to find out if hitting tab becomes
+        --   -- annoying, so starting there
+        --   auto_show = false,
+        -- },
+      },
+
+      -- Fixing auto complete settings also for command line //AB
+      -- See snippet for general autocomplete (not command line)
+      -- for more comments
+      cmdline = {
+        completion = {
+          menu = { auto_show = false },
+          list = {
+            selection = {
+              -- Preselect is not the issue, just auto insert //AB
+              -- preselect = false,
+              auto_insert = false,
+            },
+          },
+        },
       },
 
       sources = {
@@ -938,11 +974,133 @@ require('lazy').setup({
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
+
+  -- Soo, turns out I missed a great architectural overhaul
+  -- around treesitter and related. I cloned the repo 2026-01-22.
+  -- 2026-01-27 19 commits came in, with major breaking changes
+  -- from treesitter and related.
+  -- This is the new treesitter snippet as a test.
+  -- I should probably pull a whole new fresh kickstart config
+  -- and reapply any changes I have done that I want to keep.
+  -- That's not for tonight though..
+  --
+  -- Aaand, this new thing also doesn't give me syntax highlighting.
+  -- AI tells me to add glue lines, but I've seen enough of glue without
+  -- understanding of what broke today, and it inevitably doesn't actually
+  -- fix it.
+  -- Soo, for now, trying to revert to the pre architecture overhaul
+  -- snippet that at least gave me syntax highlighting and incremental
+  -- node selection. Then when time, I'll look into a full reinstall
+  -- of Neovim and Kickstart. There were many changes to the config,
+  -- not just the treesitter snippet.
+  -- //AB
+  -- { -- Highlight, edit, and navigate code
+  --   'nvim-treesitter/nvim-treesitter',
+  --   config = function()
+  --     local filetypes = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
+  --     require('nvim-treesitter').install(filetypes)
+  --     vim.api.nvim_create_autocmd('FileType', {
+  --       pattern = filetypes,
+  --       callback = function()
+  --         vim.treesitter.start()
+  --       end,
+  --     })
+  --   end,
+  -- },
+
+  -- Broken, does not add anything compared to best working one
+  -- {
+  --   'nvim-treesitter/nvim-treesitter',
+  --   branch = 'master',
+  --   build = ':TSUpdate',
+  --   config = function()
+  --     -- 1. FORCE register the module manually since the plugin's auto-register is failing
+  --     local status_ok, ts_configs = pcall(require, 'nvim-treesitter.configs')
+  --     if not status_ok then
+  --       return
+  --     end
+  --
+  --     -- This is the manual 'hook' that the plugin usually does for you
+  --     ts_configs.define_modules {
+  --       textobjects = {
+  --         module_path = 'nvim-treesitter-textobjects.select',
+  --         is_supported = function(lang)
+  --           return true
+  --         end,
+  --       },
+  --     }
+  --
+  --     -- 2. Now run the standard setup
+  --     ts_configs.setup {
+  --       modules = {},
+  --       sync_install = false,
+  --       ignore_install = {},
+  --       auto_install = true,
+  --       ensure_installed = { 'bash', 'c', 'lua', 'markdown', 'vim', 'vimdoc', 'python' },
+  --       highlight = { enable = true },
+  --       indent = { enable = true },
+  --       textobjects = {
+  --         select = {
+  --           enable = true,
+  --           lookahead = true,
+  --           keymaps = {
+  --             ['af'] = '@function.outer',
+  --             ['if'] = '@function.inner',
+  --             ['ac'] = '@class.outer',
+  --             ['ic'] = '@class.inner',
+  --           },
+  --         },
+  --       },
+  --     }
+  --   end,
+  --   dependencies = {
+  --     'nvim-treesitter/nvim-treesitter-textobjects',
+  --   },
+  -- },
+
+  -- Soo, treesitter is going through a major rewrite at the moment
+  -- and I unluckily stumbled right into the transition period.
+  -- See comments at the other commented out treesitter snippets for more details.
+  -- This is the one that worked the best. It's according to the old system,
+  -- pinning the master branch as explained in comments below.
+  -- If I understand correctly, this one gives me all functionality
+  -- except treesitter textobjects that I never got to work, but also
+  -- the other plugin mini.ai overlaps and provides most of
+  -- the functionality I would have gotten from treesitter textobjects.
+  -- The plan right now is to use this until the time comes for a clean
+  -- slate, reinstalling Neovim and Kickstart from scratch to cross the
+  -- transition bounary and go onto the new system.
+  -- If I don't find additional functionality that I am missing,
+  -- it might even be smart to wait a little with the plunge, so
+  -- they have time to get rid of some transition bugs.
+  -- Aight, this has been a marathon debug and neovim learning seession.
+  -- Over and out
+  -- //AB
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    -- Treesitter is currently going through a rewrite, see their pages.
+    -- Sticking with the master branch for now, since the new main branch
+    -- is still in development/maturation //AB
+    branch = 'master',
     build = ':TSUpdate',
-    main = 'nvim-treesitter.configs', -- Sets main module to use for opts
+    -- The master branch has a different location for the config
+    -- See original line below //AB
+    main = 'nvim-treesitter.configs',
+    -- main = 'nvim-treesitter', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
+
+    -- Added these plugins for more modern vim functionality
+    -- See TJs comments about them below
+    -- //AB
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter-textobjects',
+      'nvim-treesitter/nvim-treesitter-context',
+    },
+    -- Force the dependency to fully execute its plugin/ scripts
+    -- before Treesitter core runs its setup(opts)
+    init = function()
+      require('lazy').load { plugins = { 'nvim-treesitter-textobjects' } }
+    end,
     opts = {
       ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
       -- Autoinstall languages that are not installed
@@ -955,6 +1113,38 @@ require('lazy').setup({
         additional_vim_regex_highlighting = { 'ruby' },
       },
       indent = { enable = true, disable = { 'ruby' } },
+
+      -- Adding this for textobjects
+      -- Note TJs comment about this plugin below
+      -- //AB
+      textobjects = {
+        select = {
+          enable = true,
+          lookahead = true,
+          keymaps = {
+            ['af'] = '@function.outer',
+            ['if'] = '@function.inner',
+            ['ac'] = '@class.outer',
+            ['ic'] = '@class.inner',
+            ['ia'] = '@parameter.inner',
+            ['aa'] = '@parameter.outer',
+          },
+        },
+      },
+      -- Adding this for incremental selection
+      -- Note TJs comment about this plugin below
+      -- If I understood correctly, this one is included with
+      -- treesitter by default (note; master branch above)
+      -- //AB
+      incremental_selection = {
+        enable = true,
+        keymaps = {
+          init_selection = '<leader>vi', -- [V]isual [I]nit
+          node_incremental = '<leader>vi', -- [V]isual [I]ncrement
+          scope_incremental = '<leader>vc', -- [V]isual [C]ontainer/Scope
+          node_decremental = '<leader>vd', -- [V]isual [D]ecrement
+        },
+      },
     },
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
@@ -974,17 +1164,17 @@ require('lazy').setup({
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
   -- require 'kickstart.plugins.debug',
-  -- require 'kickstart.plugins.indent_line',
+  require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+  require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
@@ -1014,3 +1204,21 @@ require('lazy').setup({
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+
+--------------------------------------------------
+-- AB stuff
+
+-- Chatbot told me to add this
+------------------------------------(
+
+-- RELOAD FILES AUTOMATICALLY (For Aider)
+vim.opt.autoread = true
+vim.api.nvim_create_autocmd({ 'BufEnter', 'CursorHold', 'FocusGained' }, {
+  command = "if mode() != 'c' | checktime | endif",
+  pattern = { '*' },
+})
+
+-- SYNC CLIPBOARD (Works over SSH with WezTerm/OSC52)
+vim.opt.clipboard = 'unnamedplus'
+
+------------------------------------)
