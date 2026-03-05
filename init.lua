@@ -84,6 +84,23 @@ I hope you enjoy your Neovim journey,
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
 
+-- Tring to make OSC52 work. This seems to do it!
+-- If I understand, OSC52 is not tied to the regular clipboard system.
+-- My checkhealth still says I don't have a clipboard. OSC52 sends shit to
+-- stdout or something, with escape codes that wezterm pick up on when the
+-- text reaches it. So the remote server is unaware that any copy pasting
+-- is going on. Good to know, to not troubleshoot the wrong thing.
+-- Actually, scratch part of that. Checkhealth does say that I am using
+-- OSC52 for clipboard now, so at some level the system is aware.
+-- The rest still applies, ie the copy paste is straigt from Neovim to Wezterm,
+-- I wouldn't expect the remote server to be aware of the different clips.
+-- //AB
+vim.g.clipboard = {
+  name = 'osc52',
+  copy = { ['+'] = require('vim.ui.clipboard.osc52').copy '+', ['*'] = require('vim.ui.clipboard.osc52').copy '*' },
+  paste = { ['+'] = require('vim.ui.clipboard.osc52').paste '+', ['*'] = require('vim.ui.clipboard.osc52').paste '*' },
+}
+
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -110,13 +127,16 @@ vim.o.mouse = 'a'
 -- Don't show the mode, since it's already in the status line
 vim.o.showmode = false
 
--- Sync clipboard between OS and Neovim.
---  Schedule the setting after `UiEnter` because it can increase startup-time.
---  Remove this option if you want your OS clipboard to remain independent.
---  See `:help 'clipboard'`
-vim.schedule(function()
-  vim.o.clipboard = 'unnamedplus'
-end)
+-- Commented this out, when I introduced new config to make OSC52 work.
+-- See git history for the changes, or search clip in here for all
+-- places (I know) with various old and new clipboard configuration.
+-- -- Sync clipboard between OS and Neovim.
+-- --  Schedule the setting after `UiEnter` because it can increase startup-time.
+-- --  Remove this option if you want your OS clipboard to remain independent.
+-- --  See `:help 'clipboard'`
+-- vim.schedule(function()
+--   vim.o.clipboard = 'unnamedplus'
+-- end)
 
 -- Enable break indent
 vim.o.breakindent = true
@@ -1218,7 +1238,10 @@ vim.api.nvim_create_autocmd({ 'BufEnter', 'CursorHold', 'FocusGained' }, {
   pattern = { '*' },
 })
 
--- SYNC CLIPBOARD (Works over SSH with WezTerm/OSC52)
-vim.opt.clipboard = 'unnamedplus'
+-- Commented this out, when I introduced new config to make OSC52 work.
+-- See git history for the changes, or search clip in here for all
+-- places (I know) with various old and new clipboard configuration.
+-- -- SYNC CLIPBOARD (Works over SSH with WezTerm/OSC52)
+-- vim.opt.clipboard = 'unnamedplus'
 
 ------------------------------------)
