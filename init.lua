@@ -94,11 +94,38 @@ P.S. You can delete this when you're done too. It's your config now! :)
 -- OSC52 for clipboard now, so at some level the system is aware.
 -- The rest still applies, ie the copy paste is straigt from Neovim to Wezterm,
 -- I wouldn't expect the remote server to be aware of the different clips.
+--
+-- Update: Disables the paste, because it seems that with the default settings,
+-- when it tries to sync clipboard using OSC52, it also sends read requests.
+-- Wezterm by default has clipboard reading disabled (although I haven't checked,
+-- just what I heard), it's a common security feature apparently. So, the read
+-- requests are never answered, and then the clipboard times out and gives
+-- up on the OSC52 connection. So, the first copy paste is fine, then crashes
+-- on the second, because it never got an answer. I suppose that the
+-- read requests correspond to the paste function. This all from conversation
+-- with AI, so handfuls of salt. This latest version that shortcircuits
+-- the paste functions with empty reponses seems to do it at least.
+-- I can copy several times now. For pasting from local, I am using
+-- insert mode plus control shift v anyways, which circumvents all of
+-- clipboard syncing altogether. That's just equivalent to Wezterm speedtyping
+-- in the terminal for me. I decided to go with that rather than change
+-- default security settings, because it's simple, works out of the box,
+-- and does not require messing with security related settings.
 -- //AB
 vim.g.clipboard = {
-  name = 'osc52',
-  copy = { ['+'] = require('vim.ui.clipboard.osc52').copy '+', ['*'] = require('vim.ui.clipboard.osc52').copy '*' },
-  paste = { ['+'] = require('vim.ui.clipboard.osc52').paste '+', ['*'] = require('vim.ui.clipboard.osc52').paste '*' },
+  name = 'OSC52-Write-Only',
+  copy = {
+    ['+'] = require('vim.ui.clipboard.osc52').copy '+',
+    ['*'] = require('vim.ui.clipboard.osc52').copy '*',
+  },
+  paste = {
+    ['+'] = function()
+      return { '' }, ''
+    end,
+    ['*'] = function()
+      return { '' }, ''
+    end,
+  },
 }
 
 -- Set <space> as the leader key
