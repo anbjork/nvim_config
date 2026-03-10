@@ -891,6 +891,13 @@ require('lazy').setup({
         --   -- annoying, so starting there
         --   auto_show = false,
         -- },
+        -- Added to avoid auto completing functions with parantheses,
+        -- which is not always desired //AB
+        accept = {
+          auto_brackets = {
+            enabled = false,
+          },
+        },
       },
 
       -- Fixing auto complete settings also for command line //AB
