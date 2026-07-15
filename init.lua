@@ -118,11 +118,29 @@ do
   -- Don't show the mode, since it's already in the status line
   vim.o.showmode = false
 
-  -- Sync clipboard between OS and Neovim.
-  --  Schedule the setting after `UiEnter` because it can increase startup-time.
-  --  Remove this option if you want your OS clipboard to remain independent.
-  --  See `:help 'clipboard'`
-  vim.schedule(function() vim.o.clipboard = 'unnamedplus' end)
+  -- -- Sync clipboard between OS and Neovim.
+  -- --  Schedule the setting after `UiEnter` because it can increase startup-time.
+  -- --  Remove this option if you want your OS clipboard to remain independent.
+  -- --  See `:help 'clipboard'`
+  -- vim.schedule(function() vim.o.clipboard = 'unnamedplus' end)
+
+  vim.g.clipboard = {
+    name = 'OSC52-Write-Only',
+    copy = {
+      ['+'] = require('vim.ui.clipboard.osc52').copy '+',
+      ['*'] = require('vim.ui.clipboard.osc52').copy '*',
+    },
+    paste = {
+      ['+'] = function()
+        return vim.fn.getreg '"', vim.fn.getregtype '"'
+      end,
+      ['*'] = function()
+        return vim.fn.getreg '"', vim.fn.getregtype '"'
+      end,
+    },
+  }
+
+
 
   -- Enable break indent
   vim.o.breakindent = true
@@ -447,6 +465,29 @@ do
 
   -- ... and there is more!
   --  Check out: https://github.com/nvim-mini/mini.nvim
+
+
+
+  vim.pack.add { { src = gh 'zbirenbaum/copilot.lua' } }
+
+  require('copilot').setup({
+    suggestion = {
+      enabled = true,
+      auto_trigger = true, -- Automatically trigger ghost text as you type
+      debounce = 75,
+      keymap = {
+        accept = "<M-l>",   -- Alt + l to accept the suggestion
+        accept_word = "<M-w>", -- Alt + w to accept only the next word
+        accept_line = "<M-a>", -- Alt + a to accept only the next line
+        next = "<M-]>",     -- Alt + ] to cycle to next suggestion
+        prev = "<M-[>",     -- Alt + [ to cycle to previous suggestion
+        dismiss = "<C-]>",  -- Ctrl + ] to dismiss suggestion
+      },
+    },
+    panel = { enabled = false }, -- Disable the split panel to keep it simple
+    })
+
+
 end
 
 -- ============================================================
@@ -694,7 +735,7 @@ do
   local servers = {
     -- clangd = {},
     -- gopls = {},
-    -- pyright = {},
+    pyright = {},
     -- rust_analyzer = {},
     --
     -- Some languages (like typescript) have entire language plugins that can be useful:
