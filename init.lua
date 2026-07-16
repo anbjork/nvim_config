@@ -471,6 +471,18 @@ do
 
 
 
+  -- Added for the replace operator //AB
+    require('mini.operators').setup({
+      replace  = { prefix = 'cr' },
+      exchange = { prefix = '' },
+      multiply = { prefix = '' },
+      sort     = { prefix = '' },
+      flash    = { prefix = '' },
+      })
+
+
+
+
   vim.pack.add { { src = gh 'zbirenbaum/copilot.lua' } }
 
   require('copilot').setup({
