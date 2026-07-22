@@ -427,6 +427,12 @@ do
   vim.pack.add { gh 'folke/todo-comments.nvim' }
   require('todo-comments').setup { signs = false }
 
+
+  -- Install Treesitter textobjects query definitions
+  -- Added //AB
+  vim.pack.add { gh 'nvim-treesitter/nvim-treesitter-textobjects' }
+
+
   -- [[ mini.nvim ]]
   --  A collection of various small independent plugins/modules
   vim.pack.add { gh 'nvim-mini/mini.nvim' }
@@ -444,14 +450,21 @@ do
   --  - va)  - [V]isually select [A]round [)]paren
   --  - yiiq - [Y]ank [I]nside [I]+1 [Q]uote
   --  - ci'  - [C]hange [I]nside [']quote
-  require('mini.ai').setup {
-    -- NOTE: Avoid conflicts with the built-in incremental selection mappings on Neovim>=0.12 (see `:help treesitter-incremental-selection`)
-    mappings = {
-      around_next = 'aa',
-      inside_next = 'ii',
-    },
-    n_lines = 500,
-  }
+  local ai = require 'mini.ai'
+    ai.setup {
+      mappings = {
+        around_next = 'aa',
+        inside_next = 'ii',
+      },
+      n_lines = 500,
+      custom_textobjects = {
+        -- Clean, predictable statement textobject powered by nvim-treesitter-textobjects query files
+        s = ai.gen_spec.treesitter {
+          a = '@statement.outer',
+          i = '@statement.outer',
+        },
+      },
+    }
 
   -- Add/delete/replace surroundings (brackets, quotes, etc.)
   --
