@@ -272,6 +272,13 @@ do
     group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
     callback = function() vim.hl.on_yank() end,
   })
+
+
+  -- Inserts a newline below the cursor without entering Insert mode
+  -- //AB
+  vim.keymap.set('n', '<CR>', 'm`o<Esc>``', { noremap = true, silent = true })
+
+
 end
 
 -- ============================================================
