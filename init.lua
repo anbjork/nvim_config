@@ -274,9 +274,10 @@ do
   })
 
 
-  -- Inserts a newline below the cursor without entering Insert mode
+  -- Insert newlines without entering insert mode
   -- //AB
   vim.keymap.set('n', '<CR>', 'm`o<Esc>``', { noremap = true, silent = true })
+  vim.keymap.set('n', '<S-CR>', 'm`O<Esc>``', { noremap = true, silent = true })
 
 
 end
