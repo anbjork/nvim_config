@@ -453,10 +453,18 @@ do
   --  - ci'  - [C]hange [I]nside [']quote
   local ai = require 'mini.ai'
     ai.setup {
-      mappings = {
-        around_next = 'aa',
-        inside_next = 'ii',
-      },
+      -- Part of stock Kickstart. defaults for these are an, and in.
+      -- Kickstart rebinds them to avoid conflicting treesitters visual
+      -- incremental selection keymaps. But with that rebind, it overrides
+      -- the default mini.ai keybinds for Around Argument and Inside Argument.
+      -- Decided to go the mini.ai route for now since I don't use the
+      -- visual incremental selections.
+      -- //AB
+      --
+      -- mappings = {
+      --   around_next = 'aa',
+      --   inside_next = 'ii',
+      -- },
       n_lines = 500,
       custom_textobjects = {
         -- Clean, predictable statement textobject powered by nvim-treesitter-textobjects query files
