@@ -541,7 +541,11 @@ do
 
 
   vim.pack.add { { src = gh 'nvim-lualine/lualine.nvim' } }
-  require('lualine').setup({ })
+  require('lualine').setup({
+    sections = {
+      lualine_b = { 'branch' }, -- Replaces diagnostics with just the git branch
+    },
+  })
 
 end
 
