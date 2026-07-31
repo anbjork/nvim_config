@@ -192,6 +192,10 @@ do
 
   vim.opt.swapfile = false
 
+  -- Put a border around floating windows, so they are distinguishable
+  -- from the text behind
+  vim.o.winborder = 'single'
+
 end
 
 -- ============================================================
