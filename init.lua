@@ -434,6 +434,10 @@ do
   vim.pack.add { gh 'nvim-treesitter/nvim-treesitter-textobjects' }
 
 
+  vim.pack.add { gh 'nvim-treesitter/nvim-treesitter-context' }
+
+
+
   -- [[ mini.nvim ]]
   --  A collection of various small independent plugins/modules
   vim.pack.add { gh 'nvim-mini/mini.nvim' }
