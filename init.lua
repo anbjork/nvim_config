@@ -622,6 +622,15 @@ do
   vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
   vim.keymap.set('n', '<leader>sc', builtin.commands, { desc = '[S]earch [C]ommands' })
   vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+  vim.keymap.set(
+    'n', '<leader>sa',
+    function()
+      require('telescope.builtin').find_files({
+        no_ignore = true,
+        hidden = true,
+        })
+      end,
+    { desc = '[S]earch [A]ll files (including ignored)' })
 
   -- Add Telescope-based LSP pickers when an LSP attaches to a buffer.
   -- If you later switch picker plugins, this is where to update these mappings.
